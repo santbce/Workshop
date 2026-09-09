@@ -1,6 +1,6 @@
 # Workshop 001
  ETL Project
- Santiago Becerra
+
 
 ## Project Description
 
