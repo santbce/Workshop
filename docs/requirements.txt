@@ -1,0 +1,11 @@
+
+## How to Run
+
+1. Install the libraries:
+pip install -r requirements.txt
+
+2. Open this notebook:
+notebooks/etl_and_analysis.ipynb
+
+3. un all notebook cells.
+The notebook will create the Data Warehouse, load the data, run the KPI queries, and show the charts.
