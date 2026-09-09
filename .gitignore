@@ -1,0 +1,25 @@
+# Entornos virtuales, variables de entorno y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Archivos temporales de Jupyter Notebook
+.ipynb_checkpoints/
+
+# Archivos de Base de Datos (SQLite)
+# Es buena práctica ignorar la base de datos local para no subir binarios pesados
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de Datos (Opcional)
+# El taller te pide cargar un CSV de 50k filas. 
+# Si el archivo es muy pesado o cambia constantemente, descomenta la siguiente línea:
+# data/*.csv
+
+# Archivos ocultos del sistema operativo (Windows / macOS)
+.DS_Store
+Thumbs.db
