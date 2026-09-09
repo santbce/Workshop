@@ -1,10 +1,9 @@
 ## Justificación del modelo dimensional
 
 Se diseñó un modelo dimensional de tipo esquema estrella para almacenar y analizar la información de los candidatos que participaron en procesos de selección. Este modelo fue elegido porque simplifica las consultas analíticas, mejora la comprensión de los datos y facilita la generación de indicadores y visualizaciones desde el Data Warehouse.
+la tabla de hechos es una aplicación de un candidato a un proceso de selección, por esta razón cada registro de `fact_applications` representa una postulación individual junto con sus puntajes, experiencia y resultado de contratación.
 
-El grano de la tabla de hechos es una aplicación de un candidato a un proceso de selección. Por esta razón, cada registro de `fact_applications` representa una postulación individual, junto con sus puntajes, experiencia y resultado de contratación.
-
-### Tabla de hechos: `fact_applications`
+Tabla de hechos: `fact_applications`
 
 Esta es la tabla central del esquema. Contiene las métricas numéricas y el resultado del proceso de selección.
 
@@ -20,7 +19,7 @@ Esta es la tabla central del esquema. Contiene las métricas numéricas y el res
 
 El atributo `is_hired` se calcula usando la regla de negocio definida para el reto: un candidato se considera contratado únicamente cuando obtiene un puntaje mayor o igual a 7 tanto en el reto de código como en la entrevista técnica.
 
-### Dimensión `dim_candidates`
+Dimensión `dim_candidates`
 
 Almacena la información descriptiva del candidato:
 
@@ -30,7 +29,7 @@ Almacena la información descriptiva del candidato:
 
 Esta dimensión evita repetir los datos personales en cada registro de la tabla de hechos.
 
-### Dimensión `dim_date`
+Dimensión `dim_date`
 
 Almacena la información temporal de la aplicación:
 
@@ -40,7 +39,7 @@ Almacena la información temporal de la aplicación:
 
 Esta dimensión permite responder preguntas como cuántas contrataciones se realizaron por año, mes o día.
 
-### Dimensión `dim_location`
+Dimensión `dim_location`
 
 Almacena el país del candidato:
 
@@ -49,7 +48,7 @@ Almacena el país del candidato:
 
 Esta dimensión evita repetir el país en todas las aplicaciones y permite analizar las contrataciones por país. Es necesaria para el indicador que compara contrataciones por año en Estados Unidos, Brasil, Colombia y Ecuador.
 
-### Dimensión `dim_job_profiles`
+Dimensión `dim_job_profiles`
 
 Agrupa los atributos del perfil profesional:
 
@@ -59,7 +58,7 @@ Agrupa los atributos del perfil profesional:
 
 Se incluyeron ambos atributos en una sola dimensión porque describen conjuntamente el perfil laboral asociado a una aplicación. Esta tabla permite crear los indicadores de contrataciones por tecnología y por seniority.
 
-### Relaciones
+Relaciones
 
 Las dimensiones se relacionan con `fact_applications` mediante relaciones de uno a muchos:
 
@@ -71,4 +70,4 @@ Las dimensiones se relacionan con `fact_applications` mediante relaciones de uno
 
 Las claves foráneas de `fact_applications` aseguran la integridad referencial: no es posible cargar una aplicación que haga referencia a un candidato, fecha, país o perfil inexistente.
 
-En conclusión, el esquema estrella separa las métricas de negocio de los atributos descriptivos. Esto reduce redundancia, facilita el mantenimiento de los datos y permite ejecutar consultas eficientes para generar KPI y visualizaciones directamente desde el Data Warehouse.
+En conclusión, el esquema estrella separa las métricas de negocio de los atributos descriptivos. Esto reduce "repetición" y facilita el mantenimiento de los datos y permite ejecutar consultas eficientes para generar KPI y visualizaciones directamente desde el Data Warehouse.
