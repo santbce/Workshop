@@ -1,0 +1,74 @@
+## Justificación del modelo dimensional
+
+Se diseñó un modelo dimensional de tipo esquema estrella para almacenar y analizar la información de los candidatos que participaron en procesos de selección. Este modelo fue elegido porque simplifica las consultas analíticas, mejora la comprensión de los datos y facilita la generación de indicadores y visualizaciones desde el Data Warehouse.
+
+El grano de la tabla de hechos es una aplicación de un candidato a un proceso de selección. Por esta razón, cada registro de `fact_applications` representa una postulación individual, junto con sus puntajes, experiencia y resultado de contratación.
+
+### Tabla de hechos: `fact_applications`
+
+Esta es la tabla central del esquema. Contiene las métricas numéricas y el resultado del proceso de selección.
+
+- `application_id`: identificador único de cada aplicación.
+- `job_profile_id`: relaciona la aplicación con la tecnología y seniority del perfil.
+- `candidate_id`: relaciona la aplicación con los datos personales del candidato.
+- `country_id`: relaciona la aplicación con el país del candidato.
+- `date_id`: relaciona la aplicación con la fecha de aplicación.
+- `yoe`: años de experiencia del candidato.
+- `code_challenge_score`: puntaje obtenido en el reto de código.
+- `technical_interview_score`: puntaje obtenido en la entrevista técnica.
+- `is_hired`: indicador binario que vale `1` si el candidato fue contratado y `0` si no lo fue.
+
+El atributo `is_hired` se calcula usando la regla de negocio definida para el reto: un candidato se considera contratado únicamente cuando obtiene un puntaje mayor o igual a 7 tanto en el reto de código como en la entrevista técnica.
+
+### Dimensión `dim_candidates`
+
+Almacena la información descriptiva del candidato:
+
+- `candidate_id`: clave primaria de la dimensión.
+- `first_name` y `last_name`: nombres del candidato.
+- `email`: dato único utilizado para identificar y evitar duplicados.
+
+Esta dimensión evita repetir los datos personales en cada registro de la tabla de hechos.
+
+### Dimensión `dim_date`
+
+Almacena la información temporal de la aplicación:
+
+- `date_id`: clave primaria derivada de la fecha.
+- `full_date`: fecha completa de aplicación.
+- `year`, `month` y `day`: atributos que permiten agrupar y filtrar información temporal.
+
+Esta dimensión permite responder preguntas como cuántas contrataciones se realizaron por año, mes o día.
+
+### Dimensión `dim_location`
+
+Almacena el país del candidato:
+
+- `country_id`: clave primaria.
+- `country_name`: nombre del país.
+
+Esta dimensión evita repetir el país en todas las aplicaciones y permite analizar las contrataciones por país. Es necesaria para el indicador que compara contrataciones por año en Estados Unidos, Brasil, Colombia y Ecuador.
+
+### Dimensión `dim_job_profiles`
+
+Agrupa los atributos del perfil profesional:
+
+- `job_profile_id`: clave primaria.
+- `technology`: tecnología principal del candidato.
+- `seniority`: nivel de experiencia o seniority.
+
+Se incluyeron ambos atributos en una sola dimensión porque describen conjuntamente el perfil laboral asociado a una aplicación. Esta tabla permite crear los indicadores de contrataciones por tecnología y por seniority.
+
+### Relaciones
+
+Las dimensiones se relacionan con `fact_applications` mediante relaciones de uno a muchos:
+
+- Un candidato puede tener una o varias aplicaciones.
+- Una fecha puede estar asociada a muchas aplicaciones.
+- Un país puede estar asociado a muchos candidatos o aplicaciones.
+- Un perfil laboral puede estar asociado a muchas aplicaciones.
+- Cada aplicación se relaciona con un único candidato, una única fecha, un único país y un único perfil laboral.
+
+Las claves foráneas de `fact_applications` aseguran la integridad referencial: no es posible cargar una aplicación que haga referencia a un candidato, fecha, país o perfil inexistente.
+
+En conclusión, el esquema estrella separa las métricas de negocio de los atributos descriptivos. Esto reduce redundancia, facilita el mantenimiento de los datos y permite ejecutar consultas eficientes para generar KPI y visualizaciones directamente desde el Data Warehouse.
